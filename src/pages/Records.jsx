@@ -28,38 +28,39 @@ const Records = () => {
     },
   ]);
 
-  const filteredResults = [...expanseRecords];
+  const [filteredRecords, setFilteredRecords] = useState(expanseRecords);
 
   const filterByName = (event) => {
     const value = event.target.value;
-    const result = filteredResults.filter((val) => {
-        return val.name.toLowerCase().includes(value.toLowerCase());
+    const result = expanseRecords.filter((val) => {
+      return val.name.toLowerCase().includes(value.toLowerCase());
     });
-    if (value == "" || !result) setNoRecord(true);
-    setExpanseRecords(result);
+    setFilteredRecords(result);
+    setNoRecord(result.length === 0);
   };
 
   const filterByExpanse = (event) => {
     const value = event.target.value;
-    const result = filteredResults.filter((val) => {
-        return val.amount.toLowerCase().includes(value.toLowerCase());
+    const result = expanseRecords.filter((val) => {
+      return val.amount.toString().toLowerCase().includes(value.toLowerCase());
     });
-    if (value == "" || !result) setNoRecord(true);
-    setExpanseRecords(result);
+    setFilteredRecords(result);
+    setNoRecord(result.length === 0);
   };
 
   const filterByDate = (event) => {
     const value = event.target.value;
-    const result = filteredResults.filter((val) => {
-        return val.date.toLowerCase().includes(value.toLowerCase());
+    const result = expanseRecords.filter((val) => {
+      return val.date.toLowerCase().includes(value.toLowerCase());
     });
-    if (value == "" || !result) setNoRecord(true);
-    setExpanseRecords(result);
+    setFilteredRecords(result);
+    setNoRecord(result.length === 0);
   };
 
   const deleteRecord = (index) => {
-    const result = filteredResults.filter((_, i) => i !== index);
+    const result = expanseRecords.filter((_, i) => i !== index);
     setExpanseRecords(result);
+    setFilteredRecords(result); // Ensure filtered records are also updated when a record is deleted
     alert("Deleted");
   };
 
@@ -94,32 +95,28 @@ const Records = () => {
             <input type="date" name="date" onChange={filterByDate} />
           </div>
         </div>
-        {filteredResults &&
-          filteredResults.map((expanse, index) => {
+        {filteredRecords.length === 0 && noRecord ? (
+          <h4>No Record Found!!</h4>
+        ) : (
+          filteredRecords.map((expanse, index) => {
             const { name, amount, date } = expanse;
             return (
-              <div className="expanse-container">
-                {noRecord ? (
-                  <h4>No Record Found!!</h4>
-                ) : (
-                  <div>
-                    <List
-                      key={index}
-                      expanse_name={name}
-                      expanse_amount={amount}
-                      date={date}
-                    />
-                    <button
-                      className="delete_button"
-                      onClick={() => deleteRecord(index)}
-                    >
-                      Delete
-                    </button>
-                  </div>
-                )}
+              <div className="expanse-container" key={index}>
+                <List
+                  expanse_name={name}
+                  expanse_amount={amount}
+                  date={date}
+                />
+                <button
+                  className="delete_button"
+                  onClick={() => deleteRecord(index)}
+                >
+                  Delete
+                </button>
               </div>
             );
-          })}
+          })
+        )}
       </div>
     </section>
   );
